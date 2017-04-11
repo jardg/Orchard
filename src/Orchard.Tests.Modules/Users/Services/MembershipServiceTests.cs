@@ -160,9 +160,9 @@ namespace Orchard.Tests.Modules.Users.Services
             var validate2 = _membershipService.ValidateUser("bad-user", "test-password");
             var validate3 = _membershipService.ValidateUser("test-user", "test-password");
 
-            Assert.That(validate1, Is.Null);
-            Assert.That(validate2, Is.Null);
-            Assert.That(validate3, Is.Not.Null);
+            Assert.That(validate1.User, Is.Null);
+            Assert.That(validate2.User, Is.Null);
+            Assert.That(validate3.User, Is.Not.Null);
         }
 
         [Test]

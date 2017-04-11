@@ -135,24 +135,23 @@ namespace Orchard.Users.Services {
             return _orchardServices.ContentManager.Query<UserPart, UserPartRecord>().Where(u => u.NormalizedUserName == lowerName).List().FirstOrDefault();
         }
 
-        public IUser ValidateUser(string userNameOrEmail, string password) {
+        public IUserIdentityResult ValidateUser(string userNameOrEmail, string password) {
             var lowerName = userNameOrEmail == null ? "" : userNameOrEmail.ToLowerInvariant();
-
+            List<string> errors = new List<string>();
             var user = _orchardServices.ContentManager.Query<UserPart, UserPartRecord>().Where(u => u.NormalizedUserName == lowerName).List().FirstOrDefault();
-
             if (user == null)
                 user = _orchardServices.ContentManager.Query<UserPart, UserPartRecord>().Where(u => u.Email == lowerName).List().FirstOrDefault();
 
-            if ( user == null || ValidatePassword(user.As<UserPart>(), password) == false )
-                return null;
+            if (user == null || ValidatePassword(user.As<UserPart>(), password) == false)
+                return new IUserIdentityResult(null, new List<string>() { "Invalid password" });
 
-            if ( user.EmailStatus != UserStatus.Approved )
-                return null;
+            if (user.EmailStatus != UserStatus.Approved)
+                errors.Add("You must verify your email" );
 
-            if ( user.RegistrationStatus != UserStatus.Approved )
-                return null;
+            if (user.RegistrationStatus != UserStatus.Approved)
+                errors.Add("You must be approved before being able to login");
 
-            return user;
+            return new IUserIdentityResult(user, errors);
         }
 
         public bool PasswordIsExpired(IUser user, int days){

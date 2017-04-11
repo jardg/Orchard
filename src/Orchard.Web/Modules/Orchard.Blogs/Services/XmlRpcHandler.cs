@@ -18,6 +18,7 @@ using Orchard.Security;
 using Orchard.Blogs.Extensions;
 using Orchard.Mvc.Html;
 using Orchard.Core.Title.Models;
+using System.Linq;
 
 namespace Orchard.Blogs.Services {
     [OrchardFeature("Orchard.Blogs.RemotePublishing")]
@@ -340,12 +341,11 @@ namespace Orchard.Blogs.Services {
         }
 
         private IUser ValidateUser(string userName, string password) {
-            IUser user = _membershipService.ValidateUser(userName, password);
-            if (user == null) {
-                throw new OrchardCoreException(T("The username or e-mail or password provided is incorrect."));
+            IUserIdentityResult identityResult = _membershipService.ValidateUser(userName, password);
+            if (identityResult.Errors.Any()) {
+                throw new OrchardCoreException(T(identityResult.Errors.FirstOrDefault()));
             }
-
-            return user;
+            return identityResult.User;
         }
 
         private static XRpcStruct CreateBlogStruct(

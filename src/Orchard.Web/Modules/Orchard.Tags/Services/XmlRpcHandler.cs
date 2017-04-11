@@ -89,7 +89,7 @@ namespace Orchard.Tags.Services {
                 return;
 
             var user = _membershipService.ValidateUser(userName, password);
-            _authorizationService.CheckAccess(StandardPermissions.AccessAdminPanel, user, null);
+            _authorizationService.CheckAccess(StandardPermissions.AccessAdminPanel, user.User, null);
 
             var driver = new XmlRpcDriver(item => {
                 var post = item as XRpcStruct;
@@ -118,7 +118,7 @@ namespace Orchard.Tags.Services {
 
         private XRpcArray MetaWeblogGetTags(string appKey, string userName, string password) {
             var user = _membershipService.ValidateUser(userName, password);
-            _authorizationService.CheckAccess(StandardPermissions.AccessAdminPanel, user, null);
+            _authorizationService.CheckAccess(StandardPermissions.AccessAdminPanel, user.User, null);
 
             var array = new XRpcArray();
             foreach (var tag in _tagService.GetTags()) {
@@ -153,7 +153,7 @@ namespace Orchard.Tags.Services {
                 if (contentItem == null)
                     return;
 
-                _orchardServices.WorkContext.CurrentUser = user;
+                _orchardServices.WorkContext.CurrentUser = user.User;
                 _tagService.UpdateTagsForContentItem(contentItem, tags);
             });
 
