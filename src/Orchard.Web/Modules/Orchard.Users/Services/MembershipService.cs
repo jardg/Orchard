@@ -137,21 +137,21 @@ namespace Orchard.Users.Services {
 
         public IUserIdentityResult ValidateUser(string userNameOrEmail, string password) {
             var lowerName = userNameOrEmail == null ? "" : userNameOrEmail.ToLowerInvariant();
-
+            List<string> errors = new List<string>();
             var user = _orchardServices.ContentManager.Query<UserPart, UserPartRecord>().Where(u => u.NormalizedUserName == lowerName).List().FirstOrDefault();
             if (user == null)
                 user = _orchardServices.ContentManager.Query<UserPart, UserPartRecord>().Where(u => u.Email == lowerName).List().FirstOrDefault();
 
             if (user == null || ValidatePassword(user.As<UserPart>(), password) == false)
-                return new IUserIdentityResult(new string[]{ "Invalid password" });//TODO mensaje decente
+                return new IUserIdentityResult(null, new List<string>() { "Invalid password" });
 
             if (user.EmailStatus != UserStatus.Approved)
-                return new IUserIdentityResult(new string[] { "You must verify your email" });//TODO mensaje decente
+                errors.Add("You must verify your email" );
 
             if (user.RegistrationStatus != UserStatus.Approved)
-                return new IUserIdentityResult(new string[] { "Pending to approve" });//TODO mensaje decente
+                errors.Add("User pending to approve");
 
-            return new IUserIdentityResult(user);
+            return new IUserIdentityResult(user, errors);
         }
 
         public bool PasswordIsExpired(IUser user, int days) {

@@ -17,6 +17,7 @@ using System.Web.Mvc;
 using System.Web.Security;
 using Orchard.Services;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Orchard.Users.Controllers {
     [HandleError, Themed]
@@ -292,8 +293,8 @@ namespace Orchard.Users.Controllers {
                 var validated = _membershipService.ValidateUser(username, currentPassword);
 
                 if (validated != null) {
-                    _membershipService.SetPassword(validated, newPassword);
-                    _userEventHandler.ChangedPassword(validated);
+                    _membershipService.SetPassword(validated.User, newPassword);
+                    _userEventHandler.ChangedPassword(validated.User);
 
                     return true;
                 }
@@ -419,12 +420,15 @@ namespace Orchard.Users.Controllers {
                 return null;
 
             var user = _membershipService.ValidateUser(userNameOrEmail, password);
-            if (user == null) {
+            if (user.User == null) {
                 _userEventHandler.LogInFailed(userNameOrEmail, password);
-                ModelState.AddModelError("_FORM", T("The username or e-mail or password provided is incorrect."));
             }
 
-            return user;
+            foreach (var error in user.Errors) {
+                ModelState.AddModelError("_FORM", error);
+            }
+
+            return user.User;
         }
 
         private bool ValidateRegistration(string userName, string email, string password, string confirmPassword) {

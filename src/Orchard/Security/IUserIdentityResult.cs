@@ -9,22 +9,18 @@ namespace Orchard.Security {
             _succeded = true;
         }
 
-        public IUserIdentityResult(IEnumerable<string> errors) {
-            _errors = errors;
-            _succeded = false;
-        }
-
-        public IUserIdentityResult(string[] errors) {
+        public IUserIdentityResult(IUser user, List<string> errors) {
+            _user = user;
             _errors = errors;
             _succeded = false;
         }
 
         private IUser _user;
-        IEnumerable<string> _errors;
+        List<string> _errors;
         bool _succeded;
 
-        IEnumerable<string> Errors { get { return _errors; } }
-        bool Succeeded { get { return _succeded; } }
-        IUser User { get { return _user; } }
+        public List<string> Errors { get { return _errors; } }
+        public bool Succeeded { get { return _succeded; } }
+        public IUser User { get { return _user; } }
     }
 }

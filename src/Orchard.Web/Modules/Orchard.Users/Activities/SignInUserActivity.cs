@@ -60,8 +60,8 @@ namespace Orchard.Users.Activities {
                     yield return T("IncorrectUserNameOrPassword");
                     yield break;
                 }
-
-                user = _membershipService.ValidateUser(userNameOrEmail, password);
+                IUserIdentityResult userIdentityResult = _membershipService.ValidateUser(userNameOrEmail, password);
+                user = (userIdentityResult ?? userIdentityResult).User;
             }
 
             if (user == null) {
