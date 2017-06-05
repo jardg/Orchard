@@ -154,7 +154,7 @@ namespace Orchard.Users.Services {
             return new IUserIdentityResult(user, errors);
         }
 
-        public bool PasswordIsExpired(IUser user, int days) {
+        public bool PasswordIsExpired(IUser user, int days){
             return user.As<UserPart>().LastPasswordChangeUtc.Value.AddDays(days) < _clock.UtcNow;
         }
 
@@ -226,7 +226,7 @@ namespace Orchard.Users.Services {
                 isValid = Crypto.VerifyHashedPassword(userPart.Password, Encoding.Unicode.GetString(CombineSaltAndPassword(saltBytes, password)));
             }
             else {
-                isValid = SecureStringEquality(userPart.Password, ComputeHashBase64(userPart.HashAlgorithm, saltBytes, password));
+                isValid = SecureStringEquality(userPart.Password, ComputeHashBase64(userPart.HashAlgorithm, saltBytes, password)); 
             }
 
             // Migrating older password hashes to Default algorithm if necessary and enabled.
