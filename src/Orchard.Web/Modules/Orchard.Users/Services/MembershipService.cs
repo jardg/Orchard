@@ -98,7 +98,7 @@ namespace Orchard.Users.Services {
                 _userEventHandlers.Approved(user);
             }
 
-            if ( registrationSettings != null 
+            if ( registrationSettings != null  
                 && registrationSettings.UsersAreModerated 
                 && registrationSettings.NotifyModeration 
                 && !createUserParams.IsApproved ) {
