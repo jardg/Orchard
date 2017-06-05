@@ -33,10 +33,10 @@ namespace Orchard.Users.Services {
         private readonly IClock _clock;
 
         public MembershipService(
-            IOrchardServices orchardServices,
-            IMessageService messageService,
-            IUserEventHandler userEventHandlers,
-            IClock clock,
+            IOrchardServices orchardServices, 
+            IMessageService messageService, 
+            IUserEventHandler userEventHandlers, 
+            IClock clock, 
             IEncryptionService encryptionService,
             IShapeFactory shapeFactory,
             IShapeDisplay shapeDisplay,
@@ -74,20 +74,20 @@ namespace Orchard.Users.Services {
             user.CreatedUtc = _clock.UtcNow;
             SetPassword(user, createUserParams.Password);
 
-            if (registrationSettings != null) {
+            if ( registrationSettings != null ) {
                 user.RegistrationStatus = registrationSettings.UsersAreModerated ? UserStatus.Pending : UserStatus.Approved;
                 user.EmailStatus = registrationSettings.UsersMustValidateEmail ? UserStatus.Pending : UserStatus.Approved;
             }
 
-            if (createUserParams.IsApproved) {
+            if(createUserParams.IsApproved) {
                 user.RegistrationStatus = UserStatus.Approved;
                 user.EmailStatus = UserStatus.Approved;
             }
 
-            var userContext = new UserContext { User = user, Cancel = false, UserParameters = createUserParams };
+            var userContext = new UserContext {User = user, Cancel = false, UserParameters = createUserParams};
             _userEventHandlers.Creating(userContext);
 
-            if (userContext.Cancel) {
+            if(userContext.Cancel) {
                 return null;
             }
 
@@ -98,15 +98,15 @@ namespace Orchard.Users.Services {
                 _userEventHandlers.Approved(user);
             }
 
-            if (registrationSettings != null
-                && registrationSettings.UsersAreModerated
-                && registrationSettings.NotifyModeration
-                && !createUserParams.IsApproved) {
+            if ( registrationSettings != null 
+                && registrationSettings.UsersAreModerated 
+                && registrationSettings.NotifyModeration 
+                && !createUserParams.IsApproved ) {
                 var usernames = String.IsNullOrWhiteSpace(registrationSettings.NotificationsRecipients)
                                     ? new string[0]
-                                    : registrationSettings.NotificationsRecipients.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                                    : registrationSettings.NotificationsRecipients.Split(new[] {',', ' '}, StringSplitOptions.RemoveEmptyEntries);
 
-                foreach (var userName in usernames) {
+                foreach ( var userName in usernames ) {
                     if (String.IsNullOrWhiteSpace(userName)) {
                         continue;
                     }
@@ -149,7 +149,7 @@ namespace Orchard.Users.Services {
                 errors.Add("You must verify your email" );
 
             if (user.RegistrationStatus != UserStatus.Approved)
-                errors.Add("User pending to approve");
+                errors.Add("You must be approved before being able to login");
 
             return new IUserIdentityResult(user, errors);
         }
@@ -234,7 +234,7 @@ namespace Orchard.Users.Services {
                 var keepOldConfiguration = _appConfigurationAccessor.GetConfiguration("Orchard.Users.KeepOldPasswordHash");
                 if (String.IsNullOrEmpty(keepOldConfiguration) || keepOldConfiguration.Equals("false", StringComparison.OrdinalIgnoreCase)) {
                     userPart.HashAlgorithm = DefaultHashAlgorithm;
-                    userPart.Password = ComputeHashBase64(userPart.HashAlgorithm, saltBytes, password);
+                    userPart.Password = ComputeHashBase64(userPart.HashAlgorithm, saltBytes, password); 
                 }
             }
 
